@@ -1,0 +1,32 @@
+body {
+  background-color: hsl(200, 100%, 20%);
+  font-family: Montserrat, sans-serif;
+  margin: 0;
+}
+
+.villagers {
+  border-inline: 5px solid black;
+  margin: 0 auto;
+  max-width: 640px;
+}
+
+.row {
+  align-items: center;
+  background-color: hsl(200, 100%, 70%);
+  display: grid;
+  font-size: 2rem;
+  grid-column-gap: 16px;
+  grid-template-columns: auto repeat(3, 1fr);
+}
+.row:nth-child(even) {
+  background-color: hsl(200, 100%, 80%);
+}
+
+.cell img {
+  --size: 64px;
+  background-color: var(--bg-color, inherit);
+  display: block;
+  font-size: 1rem;
+  height: var(--size);
+  width: var(--size);
+}

@@ -33,8 +33,7 @@ const VILLAGERS_TO_DISPLAY = [
 ]
 
 const DomElements = {
-  TABLE: document.querySelector(`table`),
-  TABLE_BODY: document.querySelector(`table tbody`)
+  TABLE_BODY: document.querySelector(`.villagers`)
 }
 
 // Villager data retrieval
@@ -53,6 +52,18 @@ async function loadVillagerData() {
 }
 
 // Villager data display
+function createCell(child) {
+  const cell = document.createElement(`div`)
+  cell.classList.add(`cell`)
+  if (typeof child === `string`) {
+    cell.textContent = child
+  } else if (child instanceof HTMLElement) {
+    cell.appendChild(child)
+  } else {
+    console.warn(`[createCell()]: Returning an empty <div> because the following child does not have defined behavior for rendering:`, child)
+  }
+  return cell
+}
 function createIcon(villager) {
   const img = document.createElement(`img`)
   img.src = villager.icon_uri
@@ -60,23 +71,13 @@ function createIcon(villager) {
   img.style.setProperty(`--bg-color`, villager['text-color'])
   return img
 }
-function createTd(child) {
-  const td = document.createElement(`td`)
-  if (typeof child === `string`) {
-    td.textContent = child
-  } else if (child instanceof HTMLElement) {
-    td.appendChild(child)
-  } else {
-    console.warn(`[createTd()]: Returning an empty <td> because the following child does not have defined behavior for rendering:`, child)
-  }
-  return td
-}
 function createVillagerRow(villager) {
-  const row = document.createElement(`tr`)
-  row.appendChild(createTd(createIcon(villager)))
-  row.appendChild(createTd(villager.localName))
-  row.appendChild(createTd(villager.personality))
-  row.appendChild(createTd(villager.species))
+  const row = document.createElement(`div`)
+  row.classList.add(`row`)
+  row.appendChild(createCell(createIcon(villager)))
+  row.appendChild(createCell(villager.localName))
+  row.appendChild(createCell(villager.personality))
+  row.appendChild(createCell(villager.species))
   return row
 }
 function displayVillagers(villagerData) {
