@@ -20,20 +20,22 @@ body {
 .villagers {
   border-inline: 5px solid black;
   margin: 0 auto;
-  max-width: 640px;
+  max-width: 704px;
 }
 
 .row {
   align-items: center;
   display: grid;
   font-size: 2rem;
-  grid-column-gap: 16px;
+  grid-column-gap: 32px;
   grid-template-columns: auto repeat(3, 1fr);
 }
+
 .row:not(.table-head) {
   background-color: hsl(200, 100%, 70%);
 }
-.row:not(.table-head):nth-child(2n + 1) {
+
+.row:not(.table-head):nth-child(even) {
   background-color: hsl(200, 100%, 80%);
 }
 
@@ -78,6 +80,12 @@ body {
 }
 
 .thead-button {
+  --sort-icon-side-width: 6px;
+  --sort-icon-base-width: calc((var(--sort-icon-side-width) * 2) * 0.866);
+  --sort-icon-on-color: hsl(120, 100%, 50%);
+  --sort-icon-off-color: #ccc;
+  --sort-icon-up-color: var(--sort-icon-off-color);
+  --sort-icon-down-color: var(--sort-icon-off-color);
   background-color: inherit;
   border-radius: 0;
   border: none;
@@ -87,10 +95,51 @@ body {
   font-size: 1.5rem;
   font-weight: bold;
   padding: 12px;
+  padding-left: 32px;
+  position: relative;
   text-align: left;
   transition: 128ms background-color ease-in-out;
 }
+
 .thead-button:active,
 .thead-button:hover {
   background-color: hsl(200, 100%, 25%);
+}
+
+.thead-button::before,
+.thead-button::after {
+  border-left: var(--sort-icon-side-width) solid transparent;
+  border-right: var(--sort-icon-side-width) solid transparent;
+  content: '';
+  left: 12px;
+  position: absolute;
+  transition-duration: 150ms;
+  transition-timing-function: ease-in-out;
+}
+
+.thead-button::before {
+  border-bottom: var(--sort-icon-base-width) solid var(--sort-icon-up-color);
+  bottom: calc(50% + 1.5px);
+  transition-property: border-bottom-color;
+}
+
+.thead-button::after {
+  border-top: var(--sort-icon-base-width) solid var(--sort-icon-down-color);
+  top: calc(50% + 1.5px);
+  transition-property: border-top-color;
+}
+
+.thead-button[data-icon-style="none"] {
+  --sort-icon-up-color: var(--sort-icon-off-color);
+  --sort-icon-down-color: var(--sort-icon-off-color);
+}
+
+.thead-button[data-icon-style="asc"] {
+  --sort-icon-up-color: var(--sort-icon-on-color);
+  --sort-icon-down-color: var(--sort-icon-off-color);
+}
+
+.thead-button[data-icon-style="desc"] {
+  --sort-icon-up-color: var(--sort-icon-off-color);
+  --sort-icon-down-color: var(--sort-icon-on-color);
 }

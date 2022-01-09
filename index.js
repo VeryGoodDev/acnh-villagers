@@ -33,9 +33,20 @@ const VILLAGERS_TO_DISPLAY = [
 ]
 const IMAGE_PROMISES = []
 
+const SortOptions = {
+  CATEGORY: null,
+  DIRECTION: null,
+}
+const Direction = {
+  ASCENDING: `ASCENDING`,
+  DESCENDING: `DESCENDING`,
+}
+
 const DomElements = {
   LOADING_ICON: document.querySelector(`.loading-icon`),
-  TABLE_BODY: document.querySelector(`.villagers`),
+  TABLE: document.querySelector(`.villagers`),
+  TABLE_BODY: document.querySelector(`.villagers .villager-rows`),
+  TABLE_HEADER_BUTTONS: document.querySelectorAll(`.thead-button`),
 }
 
 // Villager data retrieval
@@ -85,15 +96,29 @@ function createVillagerRow(villager) {
   row.appendChild(createCell(villager.species))
   return row
 }
-async function displayVillagers(villagerData) {
-  const displayData = getVillagerDisplayData(villagerData)
-  for (const villager of displayData) {
-    DomElements.TABLE_BODY.appendChild(createVillagerRow(villager))
-  }
+async function displayVillagers(displayData) {
+  setVillagerDataInDom(displayData)
+  DomElements.TABLE_HEADER_BUTTONS.forEach(button => {
+    button.addEventListener(`click`, getHeaderButtonHandler(button, displayData))
+  })
   await Promise.all(IMAGE_PROMISES)
   DomElements.LOADING_ICON.remove()
-  DomElements.TABLE_BODY.classList.remove(`hidden`)
+  DomElements.TABLE.classList.remove(`hidden`)
 
+}
+function getHeaderButtonHandler(button, displayData) {
+  const buttonCategory = button.dataset.column
+  return () => {
+    if (SortOptions.CATEGORY === buttonCategory) {
+      SortOptions.DIRECTION = flipDirection(SortOptions.DIRECTION)
+    } else {
+      SortOptions.CATEGORY = buttonCategory
+      SortOptions.DIRECTION = Direction.ASCENDING
+    }
+    const sortedData = sortVillagers(displayData)
+    setVillagerDataInDom(sortedData)
+    updateHeaderButtonIcons()
+  }
 }
 function getVillagerDisplayData(villagerData) {
   return villagerData.reduce((reduced, villager) => {
@@ -105,11 +130,56 @@ function getVillagerDisplayData(villagerData) {
     return reduced
   }, [])
 }
+function flipDirection(currentDirection) {
+  if (currentDirection === Direction.ASCENDING) {
+    return Direction.DESCENDING
+  }
+  return Direction.ASCENDING
+}
+function setVillagerDataInDom(displayData) {
+  DomElements.TABLE_BODY.innerHTML = ``
+  IMAGE_PROMISES.length = 0
+  for (const villager of displayData) {
+    DomElements.TABLE_BODY.appendChild(createVillagerRow(villager))
+  }
+}
+function sortTwoByPrioritizedCategories(villagerA, villagerB, fieldNames) {
+  const A_IS_GREATER = SortOptions.DIRECTION === Direction.ASCENDING ? 1 : -1
+  const B_IS_GREATER = A_IS_GREATER * -1
+  for (const field of fieldNames) {
+    if (villagerA[field] > villagerB[field]) return A_IS_GREATER
+    if (villagerB[field] > villagerA[field]) return B_IS_GREATER
+  }
+  return 0
+}
+function sortVillagers(displayData) {
+  return displayData.slice().sort((villagerA, villagerB) => {
+    switch (SortOptions.CATEGORY) {
+      case 'name':
+        return sortTwoByPrioritizedCategories(villagerA, villagerB, [`localName`])
+      case 'personality':
+        return sortTwoByPrioritizedCategories(villagerA, villagerB, [`personality`, `species`, `localName`])
+      case 'species':
+        return sortTwoByPrioritizedCategories(villagerA, villagerB, [`species`, `personality`, `localName`])
+    }
+  })
+}
+function updateHeaderButtonIcons() {
+  for (const button of DomElements.TABLE_HEADER_BUTTONS) {
+    if (button.dataset.column === SortOptions.CATEGORY) {
+      const iconStyle = SortOptions.DIRECTION === Direction.ASCENDING ? `asc` : `desc`
+      button.dataset.iconStyle = iconStyle
+    } else {
+      button.dataset.iconStyle = `none`
+    }
+  }
+}
 
 // Run it
 async function main() {
   const villagerData = await loadVillagerData()
-  displayVillagers(villagerData)
+  const displayData = getVillagerDisplayData(villagerData)
+  displayVillagers(displayData)
 }
 
 main()
