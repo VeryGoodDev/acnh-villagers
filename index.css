@@ -8,6 +8,7 @@
 }
 
 body {
+  --icon-size: 96px;
   background-color: hsl(200, 100%, 15%);
   font-family: Montserrat, sans-serif;
   margin: 0;
@@ -40,12 +41,11 @@ body {
 }
 
 .cell img {
-  --size: 64px;
   background-color: var(--bg-color, inherit);
   display: block;
   font-size: 1rem;
-  height: var(--size);
-  width: var(--size);
+  height: var(--icon-size);
+  width: var(--icon-size);
 }
 
 .loading-icon {
@@ -74,7 +74,7 @@ body {
   border-bottom: 5px solid hsl(200, 25%, 37.5%);
   color: #eee;
   grid-column-gap: 0;
-  grid-template-columns: 64px repeat(3, 1fr);
+  grid-template-columns: var(--icon-size) repeat(3, 1fr);
   position: sticky;
   top: 0;
 }
