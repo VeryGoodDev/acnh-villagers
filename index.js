@@ -31,9 +31,11 @@ const VILLAGERS_TO_DISPLAY = [
   // Cats
   `Kiki`, `Lolly`, `Rudy`,
 ]
+const IMAGE_PROMISES = []
 
 const DomElements = {
-  TABLE_BODY: document.querySelector(`.villagers`)
+  LOADING_ICON: document.querySelector(`.loading-icon`),
+  TABLE_BODY: document.querySelector(`.villagers`),
 }
 
 // Villager data retrieval
@@ -46,7 +48,6 @@ async function loadVillagerData() {
     return JSON.parse(localData)
   }
   const dataFromApi = await fetchVillagerData()
-  // FIXME: Make sure stringified correctly
   localStorage.setItem(RAW_DATA_STORAGE_KEY, JSON.stringify(dataFromApi))
   return dataFromApi
 }
@@ -66,6 +67,10 @@ function createCell(child) {
 }
 function createIcon(villager) {
   const img = document.createElement(`img`)
+  const imgPromise = new Promise(resolve => {
+    img.addEventListener(`load`, () => resolve())
+  })
+  IMAGE_PROMISES.push(imgPromise)
   img.src = villager.icon_uri
   img.alt = `${villager.localName}'s face`
   img.style.setProperty(`--bg-color`, villager['text-color'])
@@ -80,11 +85,15 @@ function createVillagerRow(villager) {
   row.appendChild(createCell(villager.species))
   return row
 }
-function displayVillagers(villagerData) {
+async function displayVillagers(villagerData) {
   const displayData = getVillagerDisplayData(villagerData)
   for (const villager of displayData) {
     DomElements.TABLE_BODY.appendChild(createVillagerRow(villager))
   }
+  await Promise.all(IMAGE_PROMISES)
+  DomElements.LOADING_ICON.remove()
+  DomElements.TABLE_BODY.classList.remove(`hidden`)
+
 }
 function getVillagerDisplayData(villagerData) {
   return villagerData.reduce((reduced, villager) => {

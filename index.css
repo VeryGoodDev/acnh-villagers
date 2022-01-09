@@ -1,7 +1,20 @@
+@keyframes grayscaleToColor {
+  0%, 100% {
+    filter: grayscale(0.75);
+  }
+  50% {
+    filter: grayscale(0.25);
+  }
+}
+
 body {
   background-color: hsl(200, 100%, 20%);
   font-family: Montserrat, sans-serif;
   margin: 0;
+}
+
+.hidden {
+  display: none !important;
 }
 
 .villagers {
@@ -29,4 +42,25 @@ body {
   font-size: 1rem;
   height: var(--size);
   width: var(--size);
+}
+
+.loading-icon {
+  display: grid;
+  height: 100vh;
+  place-content: center;
+  width: 100vw;
+}
+
+.loading-icon img {
+  animation-duration: 4000ms;
+  animation-iteration-count: infinite;
+  animation-name: grayscaleToColor;
+  animation-timing-function: ease-in-out;
+  width: calc(100vmax / 3.5);
+}
+
+.loading-icon span {
+  color: #eee;
+  font-size: 1.5rem;
+  text-align: center;
 }
