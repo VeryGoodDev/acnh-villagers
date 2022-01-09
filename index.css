@@ -25,13 +25,15 @@ body {
 
 .row {
   align-items: center;
-  background-color: hsl(200, 100%, 70%);
   display: grid;
   font-size: 2rem;
   grid-column-gap: 16px;
   grid-template-columns: auto repeat(3, 1fr);
 }
-.row:nth-child(even) {
+.row:not(.table-head) {
+  background-color: hsl(200, 100%, 70%);
+}
+.row:not(.table-head):nth-child(2n + 1) {
   background-color: hsl(200, 100%, 80%);
 }
 
@@ -63,4 +65,32 @@ body {
   color: #eee;
   font-size: 1.5rem;
   text-align: center;
+}
+
+.table-head {
+  background-color: hsl(200, 100%, 12.5%);
+  border-bottom: 2px solid black;
+  color: #eee;
+  grid-column-gap: 0;
+  grid-template-columns: 64px repeat(3, 1fr);
+  position: sticky;
+  top: 0;
+}
+
+.thead-button {
+  background-color: inherit;
+  border-radius: 0;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 12px;
+  text-align: left;
+  transition: 128ms background-color ease-in-out;
+}
+.thead-button:active,
+.thead-button:hover {
+  background-color: hsl(200, 100%, 25%);
 }
